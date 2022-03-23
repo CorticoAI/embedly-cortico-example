@@ -1,46 +1,19 @@
-# Getting Started with Create React App
+# Embedly Cortico Example
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is an example of the cortico embed utilizing player.js. We use a stripped down version of our embed that only displays a
+button and uses or GlobalAudioContext (utilized for all LVN audio). We use the HTML5Adapter provided by player.js to allow our iframe to be modified by the parent site that is displaying it.
 
-## Available Scripts
+## Issue
 
-In the project directory, you can run:
+While doing this integration, we ran into an issue where our embed would not run appropriately on the [player.js test site](playerjs.io/tests.htm). Upon further investigation, we kept receiving an error from google stating
+`DOMException: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD`.
+This is because web browser do not allow autoplay of audio before the user interacts with the webpage. We were able to get the test to pass on Firefox, but not Chrome. However, the provided iframe src from player.js passes on Chrome. We are unable to tell why this occurs, but this application shows that their test src has the same issues when tested on a different site.
 
-### `yarn start`
+## Running our Application
+
+`yarn start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+The app should open and provide two links. The first link (Cortico) is the cortico url in an iframe. The second link is the player.js url in an iframe. The page runs a testsuite on load. in the Chrome browser, when clicking through the link, we see that both pass the test. When refreshing while on one of the pages, we get the Chrome play error.
