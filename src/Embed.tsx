@@ -11,18 +11,19 @@ const Embed = () => {
     onChangeSound,
     isLoaded,
     audioError,
+    setCurrentSrc,
   } = React.useContext(GlobalAudioContext);
 
   React.useEffect(() => {
     const fullAudioUrl = `https://origin-embed.dev.lvn.org/highlight/161/play`;
     if (src !== fullAudioUrl) {
-      onChangeSound(fullAudioUrl);
+      setCurrentSrc(fullAudioUrl);
     } else if (audioError) {
       // in the case of an audio error, avoid using the browser's cached version of the audio file
       // https://stackoverflow.com/questions/25821915/how-to-force-the-html5-audio-tag-to-reload-a-changing-file
       onChangeSound(`${fullAudioUrl}/?${new Date().getTime()}`);
     }
-  }, [audioError, onChangeSound, src]);
+  }, [audioError, onChangeSound, setCurrentSrc, src]);
 
   const handlePlay = () => {
     onPlay();

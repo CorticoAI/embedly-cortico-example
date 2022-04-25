@@ -195,11 +195,13 @@ const IframeTest = ({ iframeUrl, width = 570, height = 220 }: Props) => {
       await delay(() => {
         player.getCurrentTime((time: number) => {
           console.log("Testing getCurrentTime");
+          if (time === endtime) {
+            setResults((self) => ({
+              events: { ...self.events },
+              methods: { ...self.methods, getCurrentTime: true },
+            }));
+          }
         });
-        setResults((self) => ({
-          events: { ...self.events },
-          methods: { ...self.methods, getCurrentTime: true },
-        }));
       }, 500);
 
       // Testing Loop

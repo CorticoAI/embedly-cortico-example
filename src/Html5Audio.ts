@@ -1,5 +1,3 @@
-//@ts-ignore
-import playerjs from "player.js";
 /**
  * Wrapper around HTML5 Audio objects
  */
@@ -38,6 +36,7 @@ class Html5Audio {
   boundEventListeners: Array<[string, () => void]> = [];
   hasSrc: boolean = false;
   isLoaded: boolean = false;
+  currentSrc: string | undefined;
 
   constructor({
     src,
@@ -59,9 +58,6 @@ class Html5Audio {
     // update internal is loaded flag
     audio.addEventListener("loadeddata", function () {
       instance.isLoaded = true;
-      // audio.muted = true;
-      const adapter = new playerjs.HTML5Adapter(audio);
-      adapter.ready();
     });
 
     function addEventListener(
@@ -97,6 +93,10 @@ class Html5Audio {
     }
   }
 
+  setCurrentSrc = (src: string | undefined) => {
+    this.currentSrc = src;
+  };
+
   setSrc(src: string | undefined) {
     const fullSrc =
       src && src[0] === "/" ? `${window.location.origin}${src}` : src;
@@ -118,10 +118,13 @@ class Html5Audio {
   }
 
   play(seekTime?: number) {
-    if (!this.hasSrc) return;
+    if (!this.hasSrc && !this.currentSrc) return;
 
     if (seekTime != null) {
       this.audio.currentTime = seekTime;
+    }
+    if (this.audio.src !== this.currentSrc) {
+      this.setSrc(this.currentSrc);
     }
 
     this.audio.play();

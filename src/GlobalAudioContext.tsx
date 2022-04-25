@@ -1,5 +1,6 @@
 import * as React from "react";
 import Html5Audio from "./Html5Audio";
+import PlayerjsAdapter from "./PlayerjsAdapter";
 
 export interface GlobalAudioContextValue {
   isPlaying: boolean;
@@ -11,13 +12,14 @@ export interface GlobalAudioContextValue {
   src: string | undefined;
   meta: any;
   audioError: MediaError | undefined;
-  sound: Html5Audio;
+  sound: Html5Audio | undefined;
   onPlay: (seekTime?: number, endTime?: number) => void;
   onSeek: (seekTime: number) => void;
   onChangePlaybackSpeed: (playbackSpeed: number) => void;
   onPause: () => void;
   onStop: () => void; // pauses then clears the src
   onChangeSound: (src: string, meta?: any) => void;
+  setCurrentSrc: (src: string) => void;
 }
 
 export const GlobalAudioContext = React.createContext({
@@ -30,12 +32,14 @@ export const GlobalAudioContext = React.createContext({
   src: undefined,
   meta: undefined,
   audioError: undefined,
+  sound: undefined,
   onPlay: (seekTime?: number, endTime?: number) => {},
   onSeek: (seekTime: number) => {},
   onChangePlaybackSpeed: (playbackSpeed: number) => {},
   onPause: () => {},
   onStop: () => {},
   onChangeSound: (src: string, meta?: any) => {},
+  setCurrentSrc: (src: string) => {},
 } as GlobalAudioContextValue);
 
 interface Props {}
@@ -49,13 +53,14 @@ export class GlobalAudioContextProvider extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
-    this.sound = new Html5Audio({
+    const sound = new Html5Audio({
       onPlay: this.handleAudioPlay,
       onPause: this.handleAudioPause,
       onEnd: this.handleAudioEnd,
       onLoad: this.handleAudioLoaded,
       onError: this.handleAudioError,
     });
+    this.sound = sound;
   }
 
   componentWillUnmount() {
@@ -237,12 +242,14 @@ export class GlobalAudioContextProvider extends React.Component<Props> {
       onStop: this.handleControlsStop,
       onChangeSound: this.handleChangeSound,
       onChangePlaybackSpeed: this.handleControlsChangePlaybackSpeed,
+      setCurrentSrc: sound.setCurrentSrc,
     };
   }
 
   render() {
     const value = this.globalAudioContextValue();
-
+    const adapter = new PlayerjsAdapter(value);
+    adapter.ready();
     return (
       <GlobalAudioContext.Provider value={value}>
         {this.props.children}
